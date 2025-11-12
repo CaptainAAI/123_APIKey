@@ -48,3 +48,55 @@ app.post('/create', async (req, res) => {
     res.status(500).json({ message: 'Database error' });
   }
 });
+
+// ======================
+// 🔍 CHECK API KEY
+// ======================
+app.post('/checkapi', async (req, res) => {
+  const clientKey = req.body.api_key;
+
+  if (!clientKey) {
+    return res.status(400).json({
+      valid: false,
+      message: 'Missing api_key in body'
+    });
+  }
+
+  // Cek format dulu
+  const isValidFormat =
+    clientKey.startsWith('sk-') &&
+    clientKey.length >= 10 &&
+    /^[A-Za-z0-9\-]+$/.test(clientKey);
+
+  if (!isValidFormat) {
+    return res.status(401).json({
+      valid: false,
+      message: 'Invalid API key format'
+    });
+  }
+
+  // Cek apakah key ada di database
+  try {
+    const [rows] = await db.query('SELECT * FROM api_keys WHERE `key` = ?', [clientKey]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({
+        valid: false,
+        message: 'API key not found'
+      });
+    }
+
+    // Kalau ditemukan:
+    return res.json({
+      valid: true,
+      message: 'API key is valid',
+      data: rows[0]
+    });
+  } catch (err) {
+    console.error('❌ Error checking key:', err);
+    return res.status(500).json({
+      valid: false,
+      message: 'Database error'
+    });
+  }
+});
