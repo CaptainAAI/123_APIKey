@@ -100,3 +100,17 @@ app.post('/checkapi', async (req, res) => {
     });
   }
 });
+
+// ======================
+// 🏠 ROOT / INDEX
+// ======================
+app.get('/', (_req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// ======================
+// 🚀 JALANKAN SERVER
+// ======================
+app.listen(port, () => {
+  console.log(`✅ Server nyala di http://localhost:${port}`);
+});
