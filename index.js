@@ -19,3 +19,14 @@ const db = await mysql.createPool({
   password: ':4GuNg210105182040',      // ganti sesuai password MySQL kamu
   database: 'apikey' // ganti sesuai nama database
 });
+
+// ======================
+// 🔑 GENERATE API KEY
+// ======================
+function generateApiKey(length = 40) {
+  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const buf = crypto.randomBytes(length);
+  let out = '';
+  for (let i = 0; i < buf.length; i++) out += alphabet[buf[i] % alphabet.length];
+  return `sk-${out}`;
+}
