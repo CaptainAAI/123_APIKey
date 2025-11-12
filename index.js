@@ -30,3 +30,21 @@ function generateApiKey(length = 40) {
   for (let i = 0; i < buf.length; i++) out += alphabet[buf[i] % alphabet.length];
   return `sk-${out}`;
 }
+
+// ======================
+// 🧩 CREATE API KEY
+// ======================
+app.post('/create', async (req, res) => {
+  try {
+    const key = generateApiKey();
+
+    // Simpan ke database
+    await db.query('INSERT INTO api_keys (`key`) VALUES (?)', [key]);
+
+    console.log('Generated and saved key:', key);
+    res.json({ message: 'API key generated and saved', api_key: key });
+  } catch (err) {
+    console.error('❌ Error inserting key:', err);
+    res.status(500).json({ message: 'Database error' });
+  }
+});
